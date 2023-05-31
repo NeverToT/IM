@@ -1,0 +1,44 @@
+server:
+  port: 1010
+spring:
+  application:
+    name: IM-Login
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/im?useSSL=false&serverTimezone=UTC
+    username: root
+    password: 123456
+
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 5
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: 1000ms
+
+logging:
+  level:
+    im/wlf/entity.*.mapper: trace # 改成你的mapper文件所在包路径
+
+mybatis-plus:
+  configuration:
+    #库名address_book -> 实体类名 AddressBook
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+  mapper-locations: classpath*:mapper/**/*.xml
+
+encrypt:
+  crypt:
+    key:123456
+
+jwt:
+  token:
+    secret: zglbcvip
