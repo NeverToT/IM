@@ -7,5 +7,4 @@ public interface LoginService {
    String loginByEmail(LoginRegisterFromParam loginFrom, String ipAddress);
    String captcha(String phone);
    String loginByPhone(LoginRegisterFromParam loginFrom, String ipAddress);
-
 }
