@@ -1,7 +1,7 @@
 import com.alibaba.fastjson2.JSON;
 import im.wlf.entity.param.LoginRegisterFromParam;
 import im.wlf.utils.JwtUtils;
-import impl.CaptchaTest;
+import impl.HttpUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
@@ -13,61 +13,83 @@ import org.springframework.stereotype.Component;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import util.MakePhone;
+import util.RandomEmailGenerator;
 
 import javax.annotation.Resource;
 import javax.annotation.Resources;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 public class Test {
-    public String str;
 
     @org.junit.Test
-    public void JwtTest() throws InterruptedException {
-        Map<String, Object> map = new HashMap<>();
-        map.put("house", "2");
-        map.put("house2", "3");
-        String token = JwtUtils.getToken(map);
-        log.info("token is {}", token);
-        Claims claims = JwtUtils.getClaims(token);
-        System.out.println(claims);
-
-        System.out.println(JwtUtils.verifyToken(token));
-        this.str = token;
-        if (JwtUtils.verifyToken(token)){
-            log.info("验证通过");
-        }else {
-            log.info("验证不通过");
-        }
-    }
-    @Value("${jwt.token.secret}")
-    String token;
-    @org.junit.Test
-    public void JWT() {
-        System.out.println(token);
-    }
-
-    @org.junit.Test
-    public void test() {
+    public void register() {
         String phoneNum = MakePhone.generatePhoneNumber();
-        LoginRegisterFromParam user = new LoginRegisterFromParam("1", "2", "3", "4");
-
+        String email = RandomEmailGenerator.generateRandomEmail();
+        System.out.println("随机生成的手机号:"+phoneNum);
+        System.out.println("随机生成的邮箱:"+email);
+        LoginRegisterFromParam user = new LoginRegisterFromParam(email, phoneNum, "123456qq", "zglbcvip");
         String userStr = JSON.toJSONString(user);
-
         try {
-            System.out.println(CaptchaTest.captcha("http://localhost:1010/register/register", userStr, "POST"));
+            System.out.println(HttpUtils.sendHttpRequest("http://localhost:1010/register/register", userStr, "POST",null));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Autowired
-    private StringRedisTemplate redisTemplate;
+    /**
+     * 手机号:15999666858
+     * 验证码：9225
+     * 邮箱：test9221@aol.com
+     * 密码："123456qq"
+     * 测试步骤：通过第一个方法生成随机的手机号，密码注册，把信息记录到这里
+     * 然后用生成的手机号发送验证码，测试通过手机登陆
+     * 通过生成的邮箱和密码，测试通过密码登陆
+     */
     @org.junit.Test
-    public void RedisTest(){
-        System.out.println(redisTemplate);
+    public void captcha() throws IOException {
+        String captcha = HttpUtils.sendHttpRequest("http://localhost:1010/login/captcha/15999666858", null, "POST",null);
+        System.out.println(captcha);
 
     }
+
+    @org.junit.Test
+    public void loginByPhone() {
+
+        LoginRegisterFromParam user = new LoginRegisterFromParam(null, "15999666858",null,"9225", null);
+        String userStr = JSON.toJSONString(user);
+        String token = null;
+        try {
+          token =  HttpUtils.sendHttpRequest("http://localhost:1010/login/loginByPhone", userStr, "POST",null);
+          log.info("生成的token{}",token);
+          //测试被拦截器拦截需要验证token的接口
+          String tokenTure = HttpUtils.sendHttpRequest("http://localhost:1010/test/tokenTest", userStr, "POST",token);
+          log.info("token是否正确：{}",tokenTure);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @org.junit.Test
+    public void loginByEmail() {
+
+        LoginRegisterFromParam user = new LoginRegisterFromParam("test9221@aol.com", null,"123456qq",null, null);
+        String userStr = JSON.toJSONString(user);
+        String token = null;
+        try {
+            token =  HttpUtils.sendHttpRequest("http://localhost:1010/login/loginByEmail", userStr, "POST",null);
+            log.info("生成的token{}",token);
+
+            String tokenTure = HttpUtils.sendHttpRequest("http://localhost:1010/test/tokenTest", userStr, "POST",token);
+            log.info("token是否正确：{}",tokenTure);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

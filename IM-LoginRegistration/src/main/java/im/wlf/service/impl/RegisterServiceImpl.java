@@ -13,8 +13,8 @@ public class RegisterServiceImpl implements RegisterService {
     @Autowired
     RegisterMapperImpl registerService;
     @Override
-    public RegisterDTO register(LoginRegisterFromParam registerFrom, String ip) {
-        RegisterDTO registerDTO = registerService.register(registerFrom,ip);
+    public RegisterDTO register(LoginRegisterFromParam registerFrom) {
+        RegisterDTO registerDTO = registerService.register(registerFrom);
         return registerDTO;
     }
 }

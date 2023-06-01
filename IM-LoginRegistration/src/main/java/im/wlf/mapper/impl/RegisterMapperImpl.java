@@ -18,11 +18,20 @@ public class RegisterMapperImpl implements RegisterMapper {
     @Autowired
     private LoginRegisterMpMapper mpMapper;
 
+    /**
+     * 手机号和邮箱一一对应
+     * @return
+     */
     @Override
-    public RegisterDTO register(LoginRegisterFromParam registerFrom, String ip) {
+    public RegisterDTO register(LoginRegisterFromParam registerFrom) {
         System.out.println(registerFrom);
+
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getEmail, registerFrom.getEmail());
+        queryWrapper.and(wrapper ->
+                wrapper.eq(User::getEmail, registerFrom.getEmail())
+                        .or()
+                        .eq(User::getPhone, registerFrom.getPhone()));
+
         Assert.isTrue(mpMapper.selectCount(queryWrapper) == 0L, "用户已存在");
         User user = new User();
         BeanUtils.copyProperties(registerFrom, user);

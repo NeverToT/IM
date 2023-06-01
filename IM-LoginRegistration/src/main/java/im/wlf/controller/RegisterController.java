@@ -15,19 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+/**
+ * 注册要有邮箱密码手机号 没写验证码
+ */
 @RestController
 @RequestMapping("/register")
 public class RegisterController {
 
-    //asf
+
     @Autowired
     private RegisterServiceImpl registerService;
 
     @PostMapping("/register")
-    public Result<RegisterDTO> register(@Valid @RequestBody LoginRegisterFromParam registerFrom, HttpServletRequest request){
-        String ipAddress = request.getRemoteAddr();
-        String header = request.getHeader("Token");
-        RegisterDTO registerDTO = registerService.register(registerFrom,ipAddress);
+    public Result<RegisterDTO> register(@Valid @RequestBody LoginRegisterFromParam registerFrom){
+        RegisterDTO registerDTO = registerService.register(registerFrom);
         return Result.<RegisterDTO>ok("ok").data(registerDTO).code(StatusCode.SUCCESS);
     }
 }

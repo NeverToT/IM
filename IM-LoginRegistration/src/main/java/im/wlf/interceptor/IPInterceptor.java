@@ -1,11 +1,6 @@
 package im.wlf.interceptor;
 
-import im.wlf.exception.LoginException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,6 +16,9 @@ public class IPInterceptor implements HandlerInterceptor {
         this.redisTemplate =redisTemplate;
     }
 
+    /**
+     *只是简单的在redis里记录访问次数
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String ipAddress = request.getRemoteAddr();
@@ -32,7 +30,7 @@ public class IPInterceptor implements HandlerInterceptor {
         } else {
             redisTemplate.opsForValue().set(ipAddress, "1", 10, TimeUnit.SECONDS);
         }
-        if (ipVisitCount >= 3) {
+        if (ipVisitCount >= 5) {
             return false;
         }
         return true;

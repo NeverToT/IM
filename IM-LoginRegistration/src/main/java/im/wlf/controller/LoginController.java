@@ -26,7 +26,7 @@ import java.util.Map;
  * <p>
  * 前端控制器
  * </p>
- *
+ *通过手机+验证码｜｜邮箱+密码登陆
  * @author wlf
  * @since 2023-05-21
  */
@@ -40,16 +40,16 @@ public class LoginController {
      * 志哥讲一下怎么在加一层，让controller返回不用都是result，再看看我用接口隔离MP对不对，还有yml怎么读取properties
      */
     @PostMapping("/loginByEmail")
-    public Result<String> loginByEmail(@RequestBody LoginRegisterFromParam loginFrom, HttpServletRequest request) {
-        String ipAddress = request.getRemoteAddr();
-        String token = loginService.loginByEmail(loginFrom, ipAddress);
-        return Result.<String>ok("登陆成功").code(StatusCode.SUCCESS).data(token);
+    public String loginByEmail(@RequestBody LoginRegisterFromParam loginFrom) {
+
+        String token = loginService.loginByEmail(loginFrom);
+        return token;
     }
 
     @PostMapping("/loginByPhone")
-    public String loginByPhone(@RequestBody LoginRegisterFromParam loginFrom, HttpServletRequest request) {
-        String ipAddress = request.getRemoteAddr();
-        String token = loginService.loginByPhone(loginFrom, ipAddress);
+    public String loginByPhone(@RequestBody LoginRegisterFromParam loginFrom) {
+
+        String token = loginService.loginByPhone(loginFrom);
         return token;
     }
 

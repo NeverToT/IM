@@ -1,6 +1,9 @@
 package im.wlf.exception;
-
+/**
+ * 不是很会用 自己乱写的
+ */
 public class LoginException extends RuntimeException {
+
 
     public LoginException(String message) {
         super(message);

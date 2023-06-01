@@ -5,5 +5,5 @@ import im.wlf.entity.param.LoginRegisterFromParam;
 
 public interface RegisterService {
 
-    RegisterDTO register(LoginRegisterFromParam registerFrom, String ip);
+    RegisterDTO register(LoginRegisterFromParam registerFrom);
 }
